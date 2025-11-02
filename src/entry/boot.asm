@@ -1,11 +1,24 @@
 section .multiboot
-align 4
-dd 0x1BADB002
-dd 0x00000003
-dd -(0x1BADB002 + 0x00000003)
+header_start:
+	dd 0xE85250D6
+	dd 0x00000000
+	dd header_end - header_start
+	dd 0x100000000 - (0xE85250D6 + 0x00000000 + (header_end - header_start))
+
+	dw 5          ; type = framebuffer header tag
+	dw 0          ; flags
+	dd 20         ; size of this tag (bytes)
+	dd 1024       ; preferred width (0 = any)
+	dd 768        ; preferred height (0 = any)
+	dd 32         ; preferred depth (bits per pixel)
+header_end:
 
 global start
 extern long_mode_start
+
+section .data
+global multiboot_info
+multiboot_info: dq 0
 
 section .text
 bits 32
@@ -17,6 +30,7 @@ start:
 	call enable_paging
 
 	lgdt [gdt64.pointer]
+	mov [multiboot_info], ebx
 	jmp gdt64.code_segment:long_mode_start
 
 	hlt

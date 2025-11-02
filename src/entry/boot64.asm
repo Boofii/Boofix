@@ -1,5 +1,6 @@
 global long_mode_start
 extern kmain
+extern multiboot_info
 
 section .text
 bits 64
@@ -11,5 +12,5 @@ long_mode_start:
     mov fs, ax
     mov gs, ax
 
+    mov rdi, [multiboot_info]
     call kmain
-    hlt
