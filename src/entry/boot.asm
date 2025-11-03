@@ -5,12 +5,12 @@ header_start:
 	dd header_end - header_start
 	dd 0x100000000 - (0xE85250D6 + 0x00000000 + (header_end - header_start))
 
-	dw 5          ; type = framebuffer header tag
-	dw 0          ; flags
-	dd 20         ; size of this tag (bytes)
-	dd 1024       ; preferred width (0 = any)
-	dd 768        ; preferred height (0 = any)
-	dd 32         ; preferred depth (bits per pixel)
+	dw 5
+	dw 0
+	dd 20
+	dd 1024
+	dd 768
+	dd 32
 header_end:
 
 global start
@@ -26,37 +26,62 @@ bits 32
 start:
 	mov esp, stack_top
 
+	mov [multiboot_info], ebx
 	call setup_page_tables
 	call enable_paging
 
 	lgdt [gdt64.pointer]
-	mov [multiboot_info], ebx
 	jmp gdt64.code_segment:long_mode_start
 
 	hlt
 
 setup_page_tables:
-	mov eax, page_table_l3
-	or eax, 0b11
-	mov [page_table_l4], eax
-	
-	mov eax, page_table_l2
-	or eax, 0b11
-	mov [page_table_l3], eax
+    mov eax, page_table_l3
+    or eax, 0b11
+    mov [page_table_l4], eax
 
-	mov ecx, 0
-.loop:
+    mov ecx, 0
+.link_l3:
+    mov eax, page_table_l2_0
+    mov ebx, ecx
+    shl ebx, 12
+    add eax, ebx
+    or eax, 0b11
+    mov [page_table_l3 + ecx*8], eax
+    inc ecx
+    cmp ecx, 4
+    jne .link_l3
 
-	mov eax, 0x200000
-	mul ecx
-	or eax, 0b10000011
-	mov [page_table_l2 + ecx * 8], eax
+    mov ebx, 0
+.fill_tables:
+    mov ecx, 0
 
-	inc ecx
-	cmp ecx, 512
-	jne .loop
+    mov edx, page_table_l2_0
+    mov esi, ebx
+    shl esi, 12
+    add edx, esi
 
-	ret
+    mov eax, 0
+
+    mov edi, ebx
+    shl edi, 30
+
+    mov esi, edi
+.fill_entries:
+    mov eax, esi
+    or  eax, 0x83
+    mov [edx + ecx*8], eax
+
+    add esi, 0x200000
+    inc ecx
+    cmp ecx, 512
+    jne .fill_entries
+
+    inc ebx
+    cmp ebx, 4
+    jne .fill_tables
+
+    ret
 
 enable_paging:
 	mov eax, page_table_l4
@@ -83,8 +108,10 @@ page_table_l4:
 	resb 4096
 page_table_l3:
 	resb 4096
-page_table_l2:
-	resb 4096
+page_table_l2_0: resb 4096
+page_table_l2_1: resb 4096
+page_table_l2_2: resb 4096
+page_table_l2_3: resb 4096
 stack_bottom:
 	resb 4096 * 4
 stack_top:

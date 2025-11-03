@@ -8,6 +8,7 @@ SRC      := src
 ISO      := $(BUILD)/$(TARGET).iso
 GRUB_CFG := build/boot/grub/grub.cfg
 LINKER   := build/linker.ld
+INCLUDE := -I$(SRC)/libs
 
 # ---------------- Sources ----------------
 asm_sources := $(shell find $(SRC) -name '*.asm')
@@ -29,7 +30,7 @@ $(TMP)/%.o : $(SRC)/%.asm
 # ---------------- Compile C++ ----------------
 $(TMP)/%.o : $(SRC)/%.cpp
 	mkdir -p $(dir $@)
-	$(CXX) -ffreestanding -O2 -std=gnu++20 -c $< -o $@
+	$(CXX) $(INCLUDE) -ffreestanding -O2 -std=gnu++20 -c $< -o $@
 
 # ---------------- Link kernel ----------------
 $(TMP)/kernel.elf: $(all_objects)
