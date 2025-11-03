@@ -5,19 +5,31 @@ IDT::IDTEntry IDT::idt[256];
 IDT::IDTR IDT::idtr;
 
 extern "C" void enable_idt(void* idtr);
-extern "C" void asm_handler();
+
+extern "C" void asm_handler32();
+extern "C" void asm_handler33();
+
+extern "C" void outb(uint8_t value, uint16_t port);
+extern "C" uint8_t inb(uint16_t port);
 
 extern "C" void c_handler(uint64_t id) {
-    Console::write("x"); 
+    switch (id) {
+        case 32:
+            // TODO: Add timer driver
+            break;
+        case 33:
+            uint8_t sc = inb(0x60);
+            // TODO: Add keyboard driver
+            break;
+    }
 }
 
 void IDT::init() {
     idtr.limit = sizeof(idt) - 1;
     idtr.base  = (uint64_t)&idt;
 
-    for (int i = 0; i < 256; i++) {
-        set_gate(i, (uint64_t)asm_handler, 0x08, 0x8E);
-    }
+    set_gate(32, (uint64_t)asm_handler32, 0x08, 0x8E);
+    set_gate(33, (uint64_t)asm_handler33, 0x08, 0x8E);
 
     enable_idt(&idtr);
 }
