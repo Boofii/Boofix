@@ -11,12 +11,13 @@ private:
         uint8_t bpp = 0;
     };
 
+public:
     static Framebuffer fb;
 
-public:
     static void init(void* mb);
     static void draw(int x, int y);
     static void draw_bitmap(int x, int y);
     static void draw_char(char ch, int x, int y);
+    static void draw_text(char* text, int x, int y);
     static void set_color(uint32_t color);
 };

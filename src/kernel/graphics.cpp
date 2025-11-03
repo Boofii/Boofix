@@ -6,7 +6,6 @@ uint32_t col = 0xFFFFFF;
 extern "C" const unsigned char font[];
 extern "C" const unsigned int font_length;
 
-
 void Graphics::init(void* mb) {
     if (!mb) return;
 
@@ -70,6 +69,18 @@ void Graphics::draw_char(char ch, int ix, int iy) {
         }
         x = ix;
         y++;
+    }
+}
+
+void Graphics::draw_text(char* text, int ix, int iy) {
+    int x = ix;
+    int y = iy;
+    int spacing = 8;
+
+    for (int i = 0; text[i] != '\0'; i++) {
+        char ch = text[i];
+        Graphics::draw_char(ch, x, y);
+        x += spacing;
     }
 }
 
