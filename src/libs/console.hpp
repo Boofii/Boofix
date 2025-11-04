@@ -10,4 +10,5 @@ private:
 
 public:
     static void write(char* text);
+    static void erase();
 };

@@ -11,6 +11,8 @@ extern "C" void asm_handler33();
 extern "C" void outb(uint8_t value, uint16_t port);
 extern "C" uint8_t inb(uint16_t port);
 
+extern void keyboard_handler(uint8_t scancode);
+
 extern "C" void c_handler(uint8_t id) {
     switch (id) {
         case 32:
@@ -18,7 +20,8 @@ extern "C" void c_handler(uint8_t id) {
             break;
         case 33:
             // TODO: Add keyboard driver
-            uint8_t code = inb(0x60);
+            uint8_t scancode = inb(0x60);
+            keyboard_handler(scancode);
             break;
     }
 }

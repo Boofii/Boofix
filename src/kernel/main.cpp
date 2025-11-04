@@ -32,7 +32,6 @@ extern "C" void kmain(void* mb) {
     Graphics::set_color(0xFFFFFF);
     Graphics::draw_text("--------------\n===>Boofix<===\n--------------", Graphics::fb.width / 2 - 24, 0);
     Console::write("\n\n\n");
-
     Graphics::set_color(0x33cc33);
 
     while (true);
