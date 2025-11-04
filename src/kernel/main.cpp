@@ -29,8 +29,11 @@ extern "C" void kmain(void* mb) {
     Graphics::init(mb);
     IDT::init();
 
-    Graphics::set_color(color(60, 255, 255));
-    Graphics::draw_text("Boofix", Graphics::fb.width / 2 - 24, 32);
+    Graphics::set_color(0xFFFFFF);
+    Graphics::draw_text("--------------\n===>Boofix<===\n--------------", Graphics::fb.width / 2 - 24, 0);
+    Console::write("\n\n\n");
+
+    Graphics::set_color(0x33cc33);
 
     while (true);
 }

@@ -75,12 +75,23 @@ void Graphics::draw_char(char ch, int ix, int iy) {
 void Graphics::draw_text(char* text, int ix, int iy) {
     int x = ix;
     int y = iy;
-    int spacing = 8;
+    int spacing_x = 8;
+    int spacing_y = 16;
 
     for (int i = 0; text[i] != '\0'; i++) {
         char ch = text[i];
-        Graphics::draw_char(ch, x, y);
-        x += spacing;
+        switch (ch) {
+            case '\t':
+                x += spacing_x * 4;
+                break;
+            case '\n':
+                x = ix;
+                y += spacing_y;
+                break;
+            default:
+                draw_char(ch, x, y);
+                x += spacing_x;
+        }
     }
 }
 
