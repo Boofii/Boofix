@@ -13,11 +13,14 @@ private:
 
 public:
     static Framebuffer fb;
+    static uint32_t spacing_x;
+    static uint32_t spacing_y;
+    static uint32_t color;
 
     static void init(void* mb);
-    static void draw(int x, int y);
-    static void draw_bitmap(int x, int y);
-    static void draw_char(char ch, int x, int y);
-    static void draw_text(char* text, int x, int y);
-    static void set_color(uint32_t color);
+    static void draw(uint32_t x, uint32_t y);
+    static void draw_bitmap(uint32_t x, uint32_t y);
+    static void draw_char(char ch, uint32_t x, uint32_t y);
+    static void draw_text(char* text, uint32_t x, uint32_t y);
+    static uint32_t hsv(uint32_t h, uint32_t s, uint32_t v);
 };

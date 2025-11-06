@@ -1,7 +1,9 @@
 #include <graphics.hpp>
 
 Graphics::Framebuffer Graphics::fb;
-uint32_t col = 0xFFFFFF;
+uint32_t Graphics::color = 0xFFFFFF;
+uint32_t Graphics::spacing_x = 14;
+uint32_t Graphics::spacing_y = 24;
 
 extern "C" const unsigned char font[];
 extern "C" const unsigned int font_length;
@@ -28,7 +30,7 @@ void Graphics::init(void* mb) {
     }
 }
 
-void Graphics::draw_bitmap(int ix, int iy) {
+void Graphics::draw_bitmap(uint32_t ix, uint32_t iy) {
     int bitmap_width = 512;
     int x = ix;
     int y = iy;
@@ -48,7 +50,7 @@ void Graphics::draw_bitmap(int ix, int iy) {
     }
 }
 
-void Graphics::draw_char(char ch, int ix, int iy) {
+void Graphics::draw_char(char ch, uint32_t ix, uint32_t iy) {
     int glyph_index = ch - 32;
     int glyph_size = 32;
     int gx = (glyph_index % 16) * glyph_size;
@@ -72,11 +74,9 @@ void Graphics::draw_char(char ch, int ix, int iy) {
     }
 }
 
-void Graphics::draw_text(char* text, int ix, int iy) {
+void Graphics::draw_text(char* text, uint32_t ix, uint32_t iy) {
     int x = ix;
     int y = iy;
-    int spacing_x = 8;
-    int spacing_y = 16;
 
     for (int i = 0; text[i] != '\0'; i++) {
         char ch = text[i];
@@ -95,14 +95,33 @@ void Graphics::draw_text(char* text, int ix, int iy) {
     }
 }
 
-void Graphics::draw(int x, int y) {
+void Graphics::draw(uint32_t x, uint32_t y) {
     if (x < 0 || x >= fb.width || y < 0 || y >= fb.height)
         return;
 
     uint32_t* pixel = (uint32_t*) (fb.addr + y * fb.pitch + x * fb.bpp / 8);
-    *pixel = col;
+    *pixel = color;
 }
 
-void Graphics::set_color(uint32_t color) {
-    col = color;
+uint32_t Graphics::hsv(uint32_t h, uint32_t s, uint32_t v) {
+    int region = h / 60;
+    int remainder = (h % 60) * 255 / 60;
+    int p = (v * (255 - s)) / 255;
+    int q = (v * (255 - (s * remainder) / 255)) / 255;
+    int t = (v * (255 - (s * (255 - remainder)) / 255)) / 255;
+
+    int r=0, g=0, b=0;
+    if (region == 0) { r = v; g = t; b = p; }
+    if (region == 1) { r = q; g = v; b = p; }
+    if (region == 2) { r = p; g = v; b = t; }
+    if (region == 3) { r = p; g = q; b = v; }
+    if (region == 4) { r = t; g = p; b = v; }
+    if (region == 5) { r = v; g = p; b = q; }
+
+    uint32_t R = r & 0xFF;
+    uint32_t G = g & 0xFF;
+    uint32_t B = b & 0xFF;
+    uint32_t A = 255;
+
+    return (A << 24) | (R << 16) | (G << 8) | B;
 }
