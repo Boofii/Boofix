@@ -28,12 +28,6 @@ static const char uppercase2[128] = {
 '\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','-','\0','\0','\0','+'
 };
 
-int start_hue = 90;
-int end_hue = 130;
-
-int h = 90;
-int i = 1;
-
 void keyboard_handler(uint8_t scancode) {
     char keycode = scancode & 0x7F;
     bool pressed = (scancode & 0x80) == 0;
@@ -56,12 +50,8 @@ void keyboard_handler(uint8_t scancode) {
             char key = !(caps1 || caps2) ? lowercase[keycode] : ((caps1 && !caps2) ? uppercase1[keycode] : uppercase2[keycode]);
             if (key) {
                 char buff[] = {key, '\0'};
-                Graphics::color = Graphics::hsv(h, 255, 255);
+                Graphics::color = 0x33cc33;
                 Console::write(buff);
-
-                h += i;
-                if (h <= start_hue || h >= end_hue)
-                    i *= -1;
             }
             break;
     }
